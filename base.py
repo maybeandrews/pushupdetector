@@ -16,9 +16,8 @@ while True:
         print("Can't receive frame (stream end?). Exiting ...")
         break
     # Our operations on the frame come here
-    gray = cv.cvtColor(frame, cv.COLOR_RGB2BGR)
     # Display the resulting frame
-    cv.imshow('frame',gray)
+    cv.imshow('frame',frame)
     if cv.waitKey(1) == ord('q'):
         break
  
