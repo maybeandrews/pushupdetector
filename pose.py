@@ -19,7 +19,7 @@ options = PoseLandmarkerOptions(
     running_mode=VisionRunningMode.LIVE_STREAM,
     result_callback=print_result)
 
-#with PoseLandmarker.create_from_options(options) as landmarker:
+with PoseLandmarker.create_from_options(options) as landmarker:
   # The landmarker is initialized. Use it here.
 
 
