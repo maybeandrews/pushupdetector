@@ -27,4 +27,3 @@ def calculate_angle(a, b, c):
     
 #     return elbow_angle, shoulder_angle
 
-
