@@ -2,6 +2,8 @@ import cv2
 import mediapipe as mp
 import numpy as np
 from angles import calculate_angle
+from angles import draw_live_vertical_progress_bar
+
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
@@ -25,11 +27,16 @@ def wait_for_start():
         cv2.putText(frame, "Press 's' to Start Push-Up Detection", (30, 150),
                     cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
         
-        cv2.imshow('Push-Up Detection', frame)
+        cv2.putText(frame, "Press 'l' to Open Leaderboards", (30, 300),
+                    cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
+        
+        
+        cv2.imshow('MENU', frame)
         
         key = cv2.waitKey(10) & 0xFF
         if key == ord('s'):  # If 's' is pressed
-            return
+            start_pushup_detection()
+            break
         elif key == ord('q'):  # If 'q' is pressed, exit the program
             cap.release()
             cv2.destroyAllWindows()
@@ -40,7 +47,7 @@ def start_pushup_detection():
     #curl counter variables
     counter = 0
     stage = None
-    visibility_threshold = 0.5
+    visibility_threshold = 0
     with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as pose:
         while cap.isOpened():
             ret, frame = cap.read()
@@ -54,9 +61,6 @@ def start_pushup_detection():
             #recolouring back to BGR
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-
-
-
 
             #extract landmarks for joints
             #I made a function here to return values to angles.py but we don't need it so I changed it back
@@ -81,6 +85,8 @@ def start_pushup_detection():
                     elbow_angle = round(calculate_angle(l_shoulder, l_elbow, l_wrist),2)
                     hip_angle = round(calculate_angle(l_shoulder, l_hip, l_knee),2)
 
+                    draw_live_vertical_progress_bar(image, elbow_angle)
+
                     #visualize angles
                     cv2.putText(image, str(elbow_angle),
                                 tuple(np.multiply(l_elbow, [frame_width,frame_height]).astype(int)),
@@ -94,9 +100,9 @@ def start_pushup_detection():
                     #print(landmarks) use landmarks[index] index is for the part of the body corresponding to the model
 
                     #counter logic
-                    if elbow_angle > 160 and hip_angle > 160:
+                    if elbow_angle > 150 and hip_angle > 150:
                         stage = "up"
-                    if elbow_angle < 90 and hip_angle > 160 and stage == 'up':
+                    if elbow_angle < 90 and hip_angle > 150 and stage == 'up':
                         stage = "down"
                         counter += 1
                 else:
@@ -131,4 +137,3 @@ def start_pushup_detection():
 
 #calling the functions and making it like a menu based function
 wait_for_start()
-start_pushup_detection()
