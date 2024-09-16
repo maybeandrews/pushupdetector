@@ -1,3 +1,4 @@
+#this file is not in use anymore its just for the starting practice
 import numpy as np
 import cv2 as cv
 import mediapipe as mp
