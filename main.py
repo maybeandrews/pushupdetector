@@ -2,8 +2,6 @@ import cv2
 import mediapipe as mp
 import numpy as np
 from angles import calculate_angle
-
-
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
@@ -31,8 +29,7 @@ def wait_for_start():
         
         key = cv2.waitKey(10) & 0xFF
         if key == ord('s'):  # If 's' is pressed
-            start_pushup_detection()
-            break
+            return
         elif key == ord('q'):  # If 'q' is pressed, exit the program
             cap.release()
             cv2.destroyAllWindows()
@@ -43,7 +40,7 @@ def start_pushup_detection():
     #curl counter variables
     counter = 0
     stage = None
-    visibility_threshold = 0.9
+    visibility_threshold = 0.5
     with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as pose:
         while cap.isOpened():
             ret, frame = cap.read()
@@ -66,11 +63,11 @@ def start_pushup_detection():
             try:
                 landmarks = results.pose_landmarks.landmark
 
-                if (landmarks[11].visibiilty > visibility_threshold and
-                    landmarks[13].visibiilty > visibility_threshold and
-                    landmarks[15].visibiilty > visibility_threshold and
-                    landmarks[23].visibiilty > visibility_threshold and
-                    landmarks[25].visibiilty > visibility_threshold):
+                if (landmarks[11].visibility > visibility_threshold and
+                    landmarks[13].visibility > visibility_threshold and
+                    landmarks[15].visibility > visibility_threshold and
+                    landmarks[23].visibility > visibility_threshold and
+                    landmarks[25].visibility > visibility_threshold):
                     
 
                     #get coords only if the visibility threshold is met
@@ -86,12 +83,12 @@ def start_pushup_detection():
 
                     #visualize angles
                     cv2.putText(image, str(elbow_angle),
-                                tuple(np.multiply(l_elbow, [1920,1080]).astype(int)),
+                                tuple(np.multiply(l_elbow, [frame_width,frame_height]).astype(int)),
                                 cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA 
                                 )
                     
                     cv2.putText(image, str(hip_angle),
-                                tuple(np.multiply(l_hip, [1920,1080]).astype(int)),
+                                tuple(np.multiply(l_hip, [frame_width,frame_height]).astype(int)),
                                 cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA 
                                 )
                     #print(landmarks) use landmarks[index] index is for the part of the body corresponding to the model
@@ -102,6 +99,8 @@ def start_pushup_detection():
                     if elbow_angle < 90 and hip_angle > 160 and stage == 'up':
                         stage = "down"
                         counter += 1
+                else:
+                    print("NOT VISIBLE")
             except:
                 pass
 
@@ -130,5 +129,6 @@ def start_pushup_detection():
         cv2.destroyAllWindows()
 
 
-#calling the functions and making it like a menu based program
+#calling the functions and making it like a menu based function
 wait_for_start()
+start_pushup_detection()
