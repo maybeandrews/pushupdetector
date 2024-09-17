@@ -32,6 +32,10 @@ def display_final_count(image, counter):
 
 # Wait for the user to press 's' to start push-up detection
 def wait_for_start():
+    #finding the screen size for full screen shinanigans
+    cv2.namedWindow('MENU', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('MENU', 1440, 932)
+    
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -58,6 +62,8 @@ def wait_for_start():
 
 #set up mediapipe instance and start detection
 def start_pushup_detection():
+    cv2.namedWindow('Mediapipe feed', cv2.WINDOW_NORMAL)
+    cv2.setWindowProperty('Mediapipe feed', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     #timer values
     start_time = time.time()
     duration = 10
