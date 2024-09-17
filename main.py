@@ -42,6 +42,8 @@ def wait_for_start():
         cv2.putText(frame, "Press 'l' to Open Leaderboards", (30, 300),
                     cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
         
+        cv2.putText(frame, "Press 'q' to QUIT", (30, 450),
+                    cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
         
         cv2.imshow('MENU', frame)
         
@@ -126,8 +128,10 @@ def start_pushup_detection():
                         if elbow_angle < 90 and hip_angle > 150 and stage == 'up':
                             stage = "down"
                             counter += 1
-                    # else:
-                    #     print("NOT VISIBLE")
+                    else:
+                        cv2.putText(image, "UNABLE TO DETECT", (200, 500),
+                    cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 0, 255), 6, cv2.LINE_AA)
+                        
                 except:
                     pass
 
