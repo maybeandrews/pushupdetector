@@ -4,6 +4,7 @@ import numpy as np
 from angles import calculate_angle
 from angles import draw_live_vertical_progress_bar
 import time
+from positioning import draw_rectangle, put_text
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -22,9 +23,9 @@ print(f"Frame Height: {frame_height}")
 
 #function to display the final count
 def display_final_count(image, counter):
-    cv2.rectangle(image, (300,300), (1600,600), (255,255,255), -1)
-    cv2.putText(image, f"Push-Ups: {counter}", (500, 500),
-                cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 0, 0), 10, cv2.LINE_AA)
+    
+    draw_rectangle(image, 0.2, 0.3, 0.8, 0.6, (255,255,255), -1)
+    put_text(image, f"Push-Ups: {counter}", 0.25, 0.5, 5, (0,0,0), 10)
     cv2.imshow('Mediapipe feed', image)
     cv2.waitKey(3000)
 
@@ -32,18 +33,20 @@ def display_final_count(image, counter):
 
 # Wait for the user to press 's' to start push-up detection
 def wait_for_start():
+    #finding the screen size for full screen shinanigans
+    cv2.namedWindow('MENU', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('MENU', 1440, 932)
+    
     while True:
         ret, frame = cap.read()
         if not ret:
             break
-        cv2.putText(frame, "Press 's' to Start Push-Up Detection", (30, 150),
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
+
+        put_text(frame, "Press 's' to Start Push-Up Detection", 0.15, 0.15, 2, (0,0,0), 3)
+
+        put_text(frame, "Press 'l' to Start Open Leaderboards", 0.15, 0.30, 2, (0,0,0), 3)
         
-        cv2.putText(frame, "Press 'l' to Open Leaderboards", (30, 300),
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
-        
-        cv2.putText(frame, "Press 'q' to QUIT", (30, 450),
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
+        put_text(frame, "Press 'q' to QUIT", 0.15, 0.45, 2, (0,0,0), 3)
         
         cv2.imshow('MENU', frame)
         
@@ -58,9 +61,11 @@ def wait_for_start():
 
 #set up mediapipe instance and start detection
 def start_pushup_detection():
+    cv2.namedWindow('Mediapipe feed', cv2.WINDOW_NORMAL)
+    cv2.setWindowProperty('Mediapipe feed', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     #timer values
     start_time = time.time()
-    duration = 10
+    duration = 15
 
     #curl counter variables
     counter = 0
@@ -129,26 +134,33 @@ def start_pushup_detection():
                             stage = "down"
                             counter += 1
                     else:
-                        cv2.putText(image, "UNABLE TO DETECT", (200, 500),
-                    cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 0, 255), 6, cv2.LINE_AA)
+                        put_text(image, "UNABLE TO DETECT", 0.1, 0.9, 5, (0,0,255), 6)
                         
                 except:
                     pass
 
 
                 #set up the rectangle box to display the counters
-                cv2.rectangle(image, (0,0), (255,125), (10,117,245), -1)
+                draw_rectangle(image, 0, 0, 0.14, 0.12, (10,117,245), -1)
 
-                #data
-                cv2.putText(image, "PUSHUPS: ", (30,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 3, cv2.LINE_AA)
-                cv2.putText(image, str(counter), (40,100), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 3, cv2.LINE_AA)
+
+                #data pushup counter box
+                put_text(image, "PUSHUPS:", 0.02, 0.03, 1, (0,0,0), 3)
+                put_text(image, str(counter), 0.025, 0.1, 2, (255,255,255), 3)
 
                 # Display countdown timer
-                cv2.putText(image, f"Time Left: {remaining_time}s", (700, 80),
-                cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 4, cv2.LINE_AA)
+                put_text(image, f"Time Left: {remaining_time}s", 0.4, 0.1, 2, (0,0,0), 4)
+
+                #defining custom connections to only draw the required connections and ignore others
+                custom_connections = [
+                (mp_pose.PoseLandmark.LEFT_SHOULDER, mp_pose.PoseLandmark.LEFT_ELBOW),
+                (mp_pose.PoseLandmark.LEFT_ELBOW, mp_pose.PoseLandmark.LEFT_WRIST),
+                (mp_pose.PoseLandmark.LEFT_SHOULDER, mp_pose.PoseLandmark.LEFT_HIP),
+                (mp_pose.PoseLandmark.LEFT_HIP, mp_pose.PoseLandmark.LEFT_KNEE)
+                ]
 
                 #render detections, drawingspec used to change colour of markings
-                mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                mp_drawing.draw_landmarks(image, results.pose_landmarks, custom_connections,
                                         mp_drawing.DrawingSpec(color=(245,66,140), thickness = 4, circle_radius = 4),
                                         mp_drawing.DrawingSpec(color=(255,255,255), thickness = 4, circle_radius = 2)
                                         )
