@@ -23,7 +23,7 @@ def draw_rectangle(image, x1_pct, y1_pct, x2_pct, y2_pct, color, thickness):
     cv2.rectangle(image, (start_x, start_y), (end_x, end_y), color, thickness)
 
 
-def put_text(image, text, x_pct, y_pct, font_scale, color, thickness):
+def put_text(image, text, x_pct, y_pct, font_scale_pct, color, thickness_pct):
     """
     Adds text to the image using relative percentages for positioning.
 
@@ -40,6 +40,10 @@ def put_text(image, text, x_pct, y_pct, font_scale, color, thickness):
 
     text_x = int(frame_width * x_pct)
     text_y = int(frame_height * y_pct)
+
+    # Scale font size and thickness relative to the frame size eg: 0.05 is 5% of frame height
+    font_scale = frame_height * font_scale_pct
+    thickness = int(frame_height * thickness_pct)
 
     cv2.putText(image, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, color, thickness, cv2.LINE_AA)
 

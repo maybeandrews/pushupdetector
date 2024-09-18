@@ -24,8 +24,8 @@ print(f"Frame Height: {frame_height}")
 #function to display the final count
 def display_final_count(image, counter):
     
-    draw_rectangle(image, 0.2, 0.3, 0.8, 0.6, (255,255,255), -1)
-    put_text(image, f"Push-Ups: {counter}", 0.25, 0.5, 5, (0,0,0), 10)
+    draw_rectangle(image, 0.2, 0.3, 0.85, 0.6, (255,255,255), -1)
+    put_text(image, f"Push-Ups: {counter}", 0.25, 0.5, 0.005, (0,0,0), 0.010)
     cv2.imshow('Mediapipe feed', image)
     cv2.waitKey(3000)
 
@@ -42,11 +42,11 @@ def wait_for_start():
         if not ret:
             break
 
-        put_text(frame, "Press 's' to Start Push-Up Detection", 0.15, 0.15, 2, (0,0,0), 3)
+        put_text(frame, "Press 's' to Start Push-Up Detection", 0.15, 0.15, 0.002, (0,0,0), 0.003)
 
-        put_text(frame, "Press 'l' to Start Open Leaderboards", 0.15, 0.30, 2, (0,0,0), 3)
+        put_text(frame, "Press 'l' to Start Open Leaderboards", 0.15, 0.30, 0.002, (0,0,0), 0.003)
         
-        put_text(frame, "Press 'q' to QUIT", 0.15, 0.45, 2, (0,0,0), 3)
+        put_text(frame, "Press 'q' to QUIT", 0.15, 0.45, 0.002, (0,0,0), 0.003)
         
         cv2.imshow('MENU', frame)
         
@@ -134,7 +134,7 @@ def start_pushup_detection():
                             stage = "down"
                             counter += 1
                     else:
-                        put_text(image, "UNABLE TO DETECT", 0.1, 0.9, 5, (0,0,255), 6)
+                        put_text(image, "UNABLE TO DETECT", 0.1, 0.9, 0.005, (0,0,255), 0.006)
                         
                 except:
                     pass
@@ -145,11 +145,11 @@ def start_pushup_detection():
 
 
                 #data pushup counter box
-                put_text(image, "PUSHUPS:", 0.02, 0.03, 1, (0,0,0), 3)
-                put_text(image, str(counter), 0.025, 0.1, 2, (255,255,255), 3)
+                put_text(image, "PUSHUPS:", 0.02, 0.03, 0.001, (0,0,0), 0.003)
+                put_text(image, str(counter), 0.025, 0.1, 0.002, (255,255,255), 0.003)
 
                 # Display countdown timer
-                put_text(image, f"Time Left: {remaining_time}s", 0.4, 0.1, 2, (0,0,0), 4)
+                put_text(image, f"Time Left: {remaining_time}s", 0.4, 0.1, 0.002, (0,0,0), 0.004)
 
                 #defining custom connections to only draw the required connections and ignore others
                 custom_connections = [
