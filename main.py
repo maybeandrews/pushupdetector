@@ -66,7 +66,7 @@ def start_pushup_detection():
     cv2.setWindowProperty('Mediapipe feed', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     #timer values
     start_time = time.time()
-    duration = 10
+    duration = 15
 
     #curl counter variables
     counter = 0
@@ -135,7 +135,7 @@ def start_pushup_detection():
                             stage = "down"
                             counter += 1
                     else:
-                        cv2.putText(image, "UNABLE TO DETECT", (200, 500),
+                        cv2.putText(image, "UNABLE TO DETECT", (200, 900),
                     cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 0, 255), 6, cv2.LINE_AA)
                         
                 except:
@@ -153,8 +153,17 @@ def start_pushup_detection():
                 cv2.putText(image, f"Time Left: {remaining_time}s", (700, 80),
                 cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 4, cv2.LINE_AA)
 
+
+                #defining custom connections to only draw the required connections and ignore others
+                custom_connections = [
+                (mp_pose.PoseLandmark.LEFT_SHOULDER, mp_pose.PoseLandmark.LEFT_ELBOW),
+                (mp_pose.PoseLandmark.LEFT_ELBOW, mp_pose.PoseLandmark.LEFT_WRIST),
+                (mp_pose.PoseLandmark.LEFT_SHOULDER, mp_pose.PoseLandmark.LEFT_HIP),
+                (mp_pose.PoseLandmark.LEFT_HIP, mp_pose.PoseLandmark.LEFT_KNEE)
+                ]
+
                 #render detections, drawingspec used to change colour of markings
-                mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                mp_drawing.draw_landmarks(image, results.pose_landmarks, custom_connections,
                                         mp_drawing.DrawingSpec(color=(245,66,140), thickness = 4, circle_radius = 4),
                                         mp_drawing.DrawingSpec(color=(255,255,255), thickness = 4, circle_radius = 2)
                                         )
