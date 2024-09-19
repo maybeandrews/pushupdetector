@@ -5,9 +5,11 @@ from angles import calculate_angle
 from angles import draw_live_vertical_progress_bar
 import time
 from positioning import draw_rectangle, put_text
+from leaderboard import input_details,write_into_file,read_from_file
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
+
 
 #video feed
 cap = cv2.VideoCapture(0)
@@ -20,13 +22,21 @@ frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 print(f"Frame Width: {frame_width}")
 print(f"Frame Height: {frame_height}")
 
+flagm=0
 
 #function to display the final count
-def display_final_count(image, counter):
+def display_final_count(image, counter, lst):
     
     draw_rectangle(image, 0.2, 0.3, 0.8, 0.6, (255,255,255), -1)
     put_text(image, f"Push-Ups: {counter}", 0.25, 0.5, 5, (0,0,0), 10)
     cv2.imshow('Mediapipe feed', image)
+    global flagm
+    if flagm:
+        print("Hello this is something")
+        filem=open("file1.txt","w")
+        lst.append(str(counter))
+        print(lst)
+        write_into_file(lst)
     cv2.waitKey(3000)
 
 
@@ -34,33 +44,52 @@ def display_final_count(image, counter):
 # Wait for the user to press 's' to start push-up detection
 def wait_for_start():
     #finding the screen size for full screen shinanigans
-    cv2.namedWindow('MENU', cv2.WINDOW_NORMAL)
-    cv2.resizeWindow('MENU', 1440, 932)
+    #cv2.namedWindow('MENU', cv2.WINDOW_NORMAL)
+    #cv2.resizeWindow('MENU', 1440, 932)
     
     while True:
         ret, frame = cap.read()
         if not ret:
             break
-
-        put_text(frame, "Press 's' to Start Push-Up Detection", 0.15, 0.15, 2, (0,0,0), 3)
-
-        put_text(frame, "Press 'l' to Start Open Leaderboards", 0.15, 0.30, 2, (0,0,0), 3)
         
-        put_text(frame, "Press 'q' to QUIT", 0.15, 0.45, 2, (0,0,0), 3)
+        put_text(frame, "Press 'd' Enter player information", 0.15, 0.15, 2, (0,0,0), 3)
+
+        put_text(frame, "Press 's' to Start Push-Up Detection", 0.15, 0.30, 2, (0,0,0), 3)
+
+        put_text(frame, "Press 'l' to Start Open Leaderboards", 0.15, 0.45, 2, (0,0,0), 3)
+        
+        put_text(frame, "Press 'q' to QUIT", 0.15, 0.60, 2, (0,0,0), 3)
         
         cv2.imshow('MENU', frame)
-        
+        global flagm
+        global n1,g1
         key = cv2.waitKey(10) & 0xFF
         if key == ord('s'):  # If 's' is pressed
             start_pushup_detection()
             break
+        elif key == ord('d'):
+            flagm=1
+            
+            n1,g1=input_details()
+            start_pushup_detection([n1,g1])
+        elif key == ord('l'):
+            cv2.namedWindow('Leaderboard', cv2.WINDOW_NORMAL)
+            while cap.isOpened():
+                ret,frame=cap.read()
+                lst=read_from_file()
+                for i in range(len(lst)):
+                    put_text(frame, lst[i], 0.15+0.15*i, 0.15, 2, (0,0,0), 3)
+                cv2.imshow('Leaderboard',frame)
+                if cv2.waitKey(10) & 0xFF == ord('q'):
+                    break
+                cv2.destroyWindow('Leaderboard')
         elif key == ord('q'):  # If 'q' is pressed, exit the program
             cap.release()
             cv2.destroyAllWindows()
             exit()
 
 #set up mediapipe instance and start detection
-def start_pushup_detection():
+def start_pushup_detection(clst):
     cv2.namedWindow('Mediapipe feed', cv2.WINDOW_NORMAL)
     cv2.setWindowProperty('Mediapipe feed', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     #timer values
@@ -172,7 +201,7 @@ def start_pushup_detection():
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
             else:
-                display_final_count(image, counter)
+                display_final_count(image, counter,clst)
                 break
         
         #return to menu screen
