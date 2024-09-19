@@ -11,7 +11,7 @@ import cv2
 def input_details():
     name,text='',''
     def get_text():
-        global name,text
+        nonlocal name,text
         name=text_field.get()
         text=var.get()
         root.destroy()
@@ -38,6 +38,7 @@ def input_details():
     button.pack(pady=5)  
 
     root.mainloop()
+    print(name,text)
     return name,text  
 
 def write_into_file(val):
@@ -70,10 +71,13 @@ def write_into_file(val):
         os.rename("D:/file2.txt","D:/file1.txt")
 
 def read_from_file():
-    file1=open('file1.txt','r')
+    file1=open("D:/file1.txt",'r')
     mnumber,fnumber=0,0
     mlst,flst=[],[]
-    for content in file1:
+    contents=file1.readlines()
+    for content in contents:
+        count=0
+        track=0
         for i in content:
             count+=1
             if i=="|":
@@ -81,7 +85,8 @@ def read_from_file():
                 if track==1:
                     start=count
                 if track==2:
-                    from_file=int(str[start:count])
+                    from_file=content[start:count-1]
+                    print(from_file)
                     if from_file=="Male" :
                         mnumber+=1
                         if mnumber<3:
@@ -90,9 +95,10 @@ def read_from_file():
                         fnumber+=1
                         if fnumber<3:
                             flst.append(content)
+    print(mlst+flst)
     return mlst+flst
     file1.close()
-
+read_from_file()
 
 
 

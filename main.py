@@ -32,10 +32,8 @@ def display_final_count(image, counter, lst):
     cv2.imshow('Mediapipe feed', image)
     global flagm
     if flagm:
-        print("Hello this is something")
         filem=open("file1.txt","w")
         lst.append(str(counter))
-        print(lst)
         write_into_file(lst)
     cv2.waitKey(3000)
 
@@ -71,18 +69,21 @@ def wait_for_start():
             flagm=1
             
             n1,g1=input_details()
+            
             start_pushup_detection([n1,g1])
         elif key == ord('l'):
             cv2.namedWindow('Leaderboard', cv2.WINDOW_NORMAL)
+            lst=read_from_file()
             while cap.isOpened():
                 ret,frame=cap.read()
-                lst=read_from_file()
+                if not ret:
+                    break
                 for i in range(len(lst)):
-                    put_text(frame, lst[i], 0.15+0.15*i, 0.15, 2, (0,0,0), 3)
+                    cv2.putText(frame, lst[i], (20,30+15*i ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
                 cv2.imshow('Leaderboard',frame)
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
-                cv2.destroyWindow('Leaderboard')
+            cv2.destroyWindow('Leaderboard')
         elif key == ord('q'):  # If 'q' is pressed, exit the program
             cap.release()
             cv2.destroyAllWindows()
