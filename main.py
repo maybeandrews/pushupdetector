@@ -30,11 +30,14 @@ def display_final_count(image, counter, lst):
     draw_rectangle(image, 0.2, 0.3, 0.8, 0.6, (255,255,255), -1)
     put_text(image, f"Push-Ups: {counter}", 0.25, 0.5, 5, (0,0,0), 10)
     cv2.imshow('Mediapipe feed', image)
+   
+   #flagm variable used to know whether a new player arrived
     global flagm
     if flagm:
         filem=open("file1.txt","w")
         lst.append(str(counter))
         write_into_file(lst)
+
     cv2.waitKey(3000)
 
 
@@ -59,31 +62,47 @@ def wait_for_start():
         put_text(frame, "Press 'q' to QUIT", 0.15, 0.60, 2, (0,0,0), 3)
         
         cv2.imshow('MENU', frame)
+
+        #n1,g1 is the variable that stores the name and gender of the player
         global flagm
         global n1,g1
+
         key = cv2.waitKey(10) & 0xFF
+
         if key == ord('s'):  # If 's' is pressed
             start_pushup_detection()
             break
+
         elif key == ord('d'):
+
+            #Pressing d indicates the arrival of a new player so setting flagm and then inputting player details
             flagm=1
-            
             n1,g1=input_details()
-            
             start_pushup_detection([n1,g1])
+
         elif key == ord('l'):
+
+            #Everything done here was lucky i am still unaware of how frame cap etc work
+
             cv2.namedWindow('Leaderboard', cv2.WINDOW_NORMAL)
             lst=read_from_file()
+
             while cap.isOpened():
+
                 ret,frame=cap.read()
+
                 if not ret:
                     break
+
                 for i in range(len(lst)):
                     cv2.putText(frame, lst[i], (20,30+15*i ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+
                 cv2.imshow('Leaderboard',frame)
+
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
             cv2.destroyWindow('Leaderboard')
+            
         elif key == ord('q'):  # If 'q' is pressed, exit the program
             cap.release()
             cv2.destroyAllWindows()
