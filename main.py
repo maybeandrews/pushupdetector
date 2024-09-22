@@ -56,9 +56,9 @@ def wait_for_start():
 
         put_text(frame, "Press 's' to Start Push-Up Detection", 0.15, 0.30, 0.002, (0,0,0), 0.003)
 
-        put_text(frame, "Press 'l' to Start Open Leaderboards", 0.15, 0.30, 0.002, (0,0,0), 0.003)
+        put_text(frame, "Press 'l' to Start Open Leaderboards", 0.15, 0.45, 0.002, (0,0,0), 0.003)
         
-        put_text(frame, "Press 'q' to QUIT", 0.15, 0.45, 0.002, (0,0,0), 0.003)
+        put_text(frame, "Press 'q' to QUIT", 0.15, 0.60, 0.002, (0,0,0), 0.003)
         
         cv2.imshow('MENU', frame)
 
