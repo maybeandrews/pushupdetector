@@ -77,10 +77,12 @@ def write_into_file(val):
             p_name=content[:first_pipe]
             p_count=int(content[second_pipe+1:-1])
 
+
+
             #Checking for name duplication
             if not flag1 and p_name==val[0]:
-                if int(val[2]>=p_count):
-                    flag1=1
+                flag1=1
+                if int(val[2])>=p_count:
                     file2.write(f"{val[0]}|{val[1]}|{val[2]}\n")
                     continue
 
@@ -135,10 +137,20 @@ def read_from_file():
         if len(mlst)==10 and len(flst)==10:
             break
 
-    return mlst+flst
+    return mlst,flst
     file1.close()
 
+def out_list(pipestring):
+
+    first_pipe=pipestring.find("|")
+    second_pipe=pipestring.rfind("|")
     
+    p_name=pipestring[:first_pipe]
+    p_count=int(pipestring[second_pipe+1:-1])
+
+    return [p_name,p_count]
+
+
 
 
 

@@ -5,7 +5,7 @@ from angles import calculate_angle
 from angles import draw_live_vertical_progress_bar
 import time
 from positioning import draw_rectangle, put_text
-from leaderboard import input_details,write_into_file,read_from_file
+from leaderboard import input_details,write_into_file,read_from_file,out_list
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -85,7 +85,7 @@ def wait_for_start():
             #Everything done here was lucky i am still unaware of how frame cap etc work
 
             cv2.namedWindow('Leaderboard', cv2.WINDOW_NORMAL)
-            xlst=read_from_file()
+            mlst,flst=read_from_file()
 
             while cap.isOpened():
 
@@ -94,9 +94,23 @@ def wait_for_start():
                 if not ret:
                     break
 
-                for i in range(len(xlst)):
-                    cv2.putText(frame, xlst[i], (20,30+15*i ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+                cv2.putText(frame,"MALE",(40,20), cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,0),1,cv2.LINE_AA)
 
+                for i in range(len(mlst)):
+
+                    clst=out_list(mlst[i])
+                    cv2.putText(frame,f"{clst[0]}       {clst[1]}", (20,40+15*i ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+
+                cv2.putText(frame,"FEMALE",(40,70+15*i), cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,0),1,cv2.LINE_AA)
+
+                i+=1
+
+                for j in range(len(flst)):
+
+                    clst=out_list(flst[j])
+                    cv2.putText(frame,f"{clst[0]}       {clst[1]}", (20,73+15*i+15*j ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)              
+               
+               
                 cv2.imshow('Leaderboard',frame)
 
                 if cv2.waitKey(10) & 0xFF == ord('q'):
