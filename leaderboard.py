@@ -48,7 +48,7 @@ def input_details():
     root.mainloop()
     
     print(name,text)
-    return name,text  
+    return [name,text]  
 
 def write_into_file(val):
 

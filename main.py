@@ -23,9 +23,10 @@ print(f"Frame Width: {frame_width}")
 print(f"Frame Height: {frame_height}")
 
 flagm=0
+lst=[]
 
 #function to display the final count
-def display_final_count(image, counter, lst):
+def display_final_count(image, counter):
     
     draw_rectangle(image, 0.2, 0.3, 0.85, 0.6, (255,255,255), -1)
     put_text(image, f"Push-Ups: {counter}", 0.25, 0.5, 0.005, (0,0,0), 0.010)
@@ -46,6 +47,8 @@ def wait_for_start():
     #finding the screen size for full screen shinanigans
     #cv2.namedWindow('MENU', cv2.WINDOW_NORMAL)
     #cv2.resizeWindow('MENU', 1440, 932)
+
+    global lst,flagm
     
     while True:
         ret, frame = cap.read()
@@ -62,13 +65,11 @@ def wait_for_start():
         
         cv2.imshow('MENU', frame)
 
-        #n1,g1 is the variable that stores the name and gender of the player
-        global flagm
-        global n1,g1
 
         key = cv2.waitKey(10) & 0xFF
 
         if key == ord('s'):  # If 's' is pressed
+            flagm=0
             start_pushup_detection()
             break
 
@@ -76,15 +77,15 @@ def wait_for_start():
 
             #Pressing d indicates the arrival of a new player so setting flagm and then inputting player details
             flagm=1
-            n1,g1=input_details()
-            start_pushup_detection([n1,g1])
+            lst=input_details()
+            start_pushup_detection()
 
         elif key == ord('l'):
 
             #Everything done here was lucky i am still unaware of how frame cap etc work
 
             cv2.namedWindow('Leaderboard', cv2.WINDOW_NORMAL)
-            lst=read_from_file()
+            xlst=read_from_file()
 
             while cap.isOpened():
 
@@ -93,8 +94,8 @@ def wait_for_start():
                 if not ret:
                     break
 
-                for i in range(len(lst)):
-                    cv2.putText(frame, lst[i], (20,30+15*i ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+                for i in range(len(xlst)):
+                    cv2.putText(frame, xlst[i], (20,30+15*i ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
 
                 cv2.imshow('Leaderboard',frame)
 
@@ -108,7 +109,7 @@ def wait_for_start():
             exit()
 
 #set up mediapipe instance and start detection
-def start_pushup_detection(clst):
+def start_pushup_detection():
     cv2.namedWindow('Mediapipe feed', cv2.WINDOW_NORMAL)
     cv2.setWindowProperty('Mediapipe feed', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     #timer values
@@ -218,10 +219,10 @@ def start_pushup_detection(clst):
                 
 
                 if cv2.waitKey(10) & 0xFF == ord('q'):
-                    display_final_count(image, counter,clst)
+                    display_final_count(image, counter)
                     break
             else:
-                display_final_count(image, counter,clst)
+                display_final_count(image, counter)
                 break
         
         #return to menu screen
