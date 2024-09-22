@@ -27,18 +27,18 @@ flagm=0
 #function to display the final count
 def display_final_count(image, counter, lst):
     
+    #Changed the position of waitkey to the top
     draw_rectangle(image, 0.2, 0.3, 0.8, 0.6, (255,255,255), -1)
     put_text(image, f"Push-Ups: {counter}", 0.25, 0.5, 5, (0,0,0), 10)
     cv2.imshow('Mediapipe feed', image)
-   
+    cv2.waitKey(3000)
+    
    #flagm variable used to know whether a new player arrived
     global flagm
     if flagm:
         filem=open("file1.txt","w")
         lst.append(str(counter))
         write_into_file(lst)
-
-    cv2.waitKey(3000)
 
 
 
@@ -219,6 +219,7 @@ def start_pushup_detection(clst):
                 
 
                 if cv2.waitKey(10) & 0xFF == ord('q'):
+                    display_final_count(image, counter,clst)
                     break
             else:
                 display_final_count(image, counter,clst)
