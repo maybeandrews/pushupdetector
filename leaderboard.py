@@ -1,159 +1,149 @@
-import tkinter as tk
-from tkinter import ttk
+from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, 
+                             QRadioButton, QPushButton, QVBoxLayout, QButtonGroup)
 import os
 import cv2
 
-#now this file will handle all the leaderboards stuff
-#and can be imported to main.py to be used
+# This file handles all the leaderboards stuff and can be imported into main.py to be used
 
+class PlayerInfoWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.name = ''
+        self.gender = 'Male'
+
+        # Create the window layout
+        self.setWindowTitle("PLAYER INFO")
+        self.setGeometry(100, 100, 400, 200)
+        
+        layout = QVBoxLayout()
+
+        # Label to guide the user
+        label = QLabel("Enter Name")
+        layout.addWidget(label)
+
+        # Text field for the user to input their name
+        self.text_field = QLineEdit(self)
+        layout.addWidget(self.text_field)
+
+        # Radio buttons for gender selection
+        self.male_radio = QRadioButton("Male")
+        self.male_radio.setChecked(True)
+        self.female_radio = QRadioButton("Female")
+
+        # Grouping the radio buttons
+        self.gender_group = QButtonGroup()
+        self.gender_group.addButton(self.male_radio)
+        self.gender_group.addButton(self.female_radio)
+
+        layout.addWidget(self.male_radio)
+        layout.addWidget(self.female_radio)
+
+        # Submit button
+        submit_button = QPushButton("Submit", self)
+        submit_button.clicked.connect(self.get_text)
+        layout.addWidget(submit_button)
+
+        self.setLayout(layout)
+
+    def get_text(self):
+        # Get the name from the text field and the selected gender
+        self.name = self.text_field.text()
+        self.gender = 'Male' if self.male_radio.isChecked() else 'Female'
+        self.close()
+
+    def get_player_info(self):
+        self.exec()
+        return [self.name, self.gender]
 
 
 def input_details():
+    app = QApplication([])
 
-    name,text='',''
+    # Create and show the player info window
+    window = PlayerInfoWindow()
+    window.show()
 
-    def get_text():
-        nonlocal name,text
-        name=text_field.get()
-        text=var.get()
-        root.destroy()
+    # Start the application loop
+    app.exec()
 
-    #Creating the window for GUI and naming it and specifying its size     
-    root = tk.Tk()
-    root.title("PLAYER INFO")
-    root.geometry("600x600")
+    return [window.name, window.gender]
 
-    #Specifying a label field to give directions to the user
-    label=tk.Label(root,text="Enter Name")
-    label.pack(pady=5)
-
-    #Specifying a text field for the user to enter name into
-    text_field = tk.Entry(root,width=40)
-    text_field.pack(pady=5)
-
-    #Specifying the radio buttons for male and female the variable var stores the value of currently selected radio button
-    var=tk.StringVar(value="Male")
-    radio1=ttk.Radiobutton(root,text="Male",value="Male",variable=var)
-    radio2=ttk.Radiobutton(root,text="Female",value="Female",variable=var)
-
-    #This pack function is used to put the widgets into the window
-    radio1.pack()
-    radio2.pack()
-
-    #The button which when pressed starts a function which extracts the value from text field and var
-    button = tk.Button(root,text="Submit",command=get_text)
-    button.pack(pady=5)  
-
-    #Display the window
-    root.mainloop()
-    
-    print(name,text)
-    return [name,text]  
 
 def write_into_file(val):
-
     """Players listed sorted by the number of pushups
        Creating two files because a new player can't be inserted in the lines in between
        So reading from one file and writing to another is done"""
     
-    #Opening files
-    file2=open("D:/file2.txt","w")
-    file1=open("D:/file1.txt","r")
-    contents=file1.readlines()
+    # Opening files
+    file2 = open("/Users/andrews/Desktop/file2.txt", "w")
+    file1 = open("/Users/andrews/Desktop/file1.txt", "r")
+    contents = file1.readlines()
 
-    #flag variable for knowing whether the current player was inserted in file or not
-    flag1=0
-    
-    #try catch block for avoiding accidental skipping close() function
+    flag1 = 0  # Flag to track if player was inserted
+
     try:
-
         for content in contents:
+            first_pipe = content.find("|")
+            second_pipe = content.rfind("|")
 
-            #finding pipe characters
-            first_pipe=content.find("|")
-            second_pipe=content.rfind("|")
+            p_name = content[:first_pipe]
+            p_count = int(content[second_pipe + 1:-1])
 
-            #extracting name and pushup count (name is to overwrite duplicates and pushup counts is to put the player at the position)
-            p_name=content[:first_pipe]
-            p_count=int(content[second_pipe+1:-1])
-
-
-
-            #Checking for name duplication
-            if not flag1 and p_name==val[0]:
-                flag1=1
-                if int(val[2])>=p_count:
+            # Check for name duplication
+            if not flag1 and p_name == val[0]:
+                flag1 = 1
+                if int(val[2]) >= p_count:
                     file2.write(f"{val[0]}|{val[1]}|{val[2]}\n")
                     continue
 
-            #Checking if the number of pushup of the current player is greater than currently read line
-            if not flag1 and int(val[2])>=p_count:
+            if not flag1 and int(val[2]) >= p_count:
                 file2.write(f"{val[0]}|{val[1]}|{val[2]}\n")
-                flag1=1
+                flag1 = 1
 
-            #Writing the currently read line
             file2.write(content)
 
-        #If the number of pushup of the current player is least of them all
         if not flag1:
-            file2.write(f"{val[0]}|{val[1]}|{val[2]}\n")                 
-    
-    finally:
+            file2.write(f"{val[0]}|{val[1]}|{val[2]}\n")
 
-        #Closing files
+    finally:
         file2.close()
         file1.close()
 
-        #Deleting the first file and renaming the second file to the name of the first file
-        os.remove("D:/file1.txt")
-        os.rename("D:/file2.txt","D:/file1.txt")
+        os.remove("/Users/andrews/Desktop/file1.txt")
+        os.rename("/Users/andrews/Desktop/file2.txt", "/Users/andrews/Desktop/file1.txt")
+
 
 def read_from_file():
+    file1 = open("/Users/andrews/Desktop/file1.txt", 'r')
+    contents = file1.readlines()
 
-    #opening and reading from file
-    file1=open("D:/file1.txt",'r')
-    contents=file1.readlines()
+    mlst, flst = [], []
 
-    #Lists to store the male top2 and female top2
-    mlst,flst=[],[]
-
-    #Loop iterating through each line in contents , One line contains the details of a particular player
     for content in contents:
+        first_pipe = content.find("|")
+        second_pipe = content.find("|", first_pipe + 1, -1)
+        from_file = content[first_pipe + 1:second_pipe]
 
-        #finding the indices of first and second pipe because the gender parameter lies between those two pipe characters
-        first_pipe=content.find("|")
-        second_pipe=content.find("|",first_pipe+1,-1)
-        from_file=content[first_pipe+1:second_pipe]
-
-        #Classifying male and female and putting them into their separate lists
-        if from_file=="Male" :
-            if len(mlst)<16:
+        if from_file == "Male":
+            if len(mlst) < 16:
                 mlst.append(content)
-        else :
-            if len(flst)<16:
-                flst.append(content) 
+        else:
+            if len(flst) < 16:
+                flst.append(content)
 
-        #Breaking from looping through the read lines when top two of both male and female players are obtained
-        if len(mlst)==15 and len(flst)==15:
+        if len(mlst) == 15 and len(flst) == 15:
             break
 
-    return mlst,flst
+    return mlst, flst
     file1.close()
 
+
 def out_list(pipestring):
+    first_pipe = pipestring.find("|")
+    second_pipe = pipestring.rfind("|")
 
-    first_pipe=pipestring.find("|")
-    second_pipe=pipestring.rfind("|")
-    
-    p_name=pipestring[:first_pipe]
-    p_count=int(pipestring[second_pipe+1:-1])
+    p_name = pipestring[:first_pipe]
+    p_count = int(pipestring[second_pipe + 1:-1])
 
-    return [p_name,p_count]
-
-
-
-
-
-
-        
+    return [p_name, p_count]
 

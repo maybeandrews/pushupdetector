@@ -5,7 +5,7 @@ from angles import calculate_angle
 from angles import draw_live_vertical_progress_bar
 import time
 from positioning import draw_rectangle, put_text
-from leaderboard import input_details,write_into_file,read_from_file
+from leaderboard import input_details,write_into_file,read_from_file,out_list
 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -31,7 +31,7 @@ def display_final_count(image, counter):
     draw_rectangle(image, 0.2, 0.3, 0.85, 0.6, (255,255,255), -1)
     put_text(image, f"Push-Ups: {counter}", 0.25, 0.5, 0.005, (0,0,0), 0.010)
     cv2.imshow('Mediapipe feed', image)
-    cv2.waitKey(3000)
+    cv2.waitKey(2500)
     
    #flagm variable used to know whether a new player arrived
     global flagm
@@ -45,8 +45,8 @@ def display_final_count(image, counter):
 # Wait for the user to press 's' to start push-up detection
 def wait_for_start():
     #finding the screen size for full screen shinanigans
-    #cv2.namedWindow('MENU', cv2.WINDOW_NORMAL)
-    #cv2.resizeWindow('MENU', 1440, 932)
+    cv2.namedWindow('MENU', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('MENU', 1440, 932)
 
     global lst,flagm
     
@@ -85,7 +85,7 @@ def wait_for_start():
             #Everything done here was lucky i am still unaware of how frame cap etc work
 
             cv2.namedWindow('Leaderboard', cv2.WINDOW_NORMAL)
-            xlst=read_from_file()
+            mlst,flst=read_from_file()
 
             while cap.isOpened():
 
@@ -94,9 +94,31 @@ def wait_for_start():
                 if not ret:
                     break
 
-                for i in range(len(xlst)):
-                    cv2.putText(frame, xlst[i], (20,30+15*i ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+                draw_rectangle(frame,0.01,0.01,0.45,0.75,(0,0,0),-1)
+                draw_rectangle(frame,0.50,0.01,0.95,0.75,(0,0,0),-1)
 
+                cv2.putText(frame,"MALE",(330,100), cv2.FONT_HERSHEY_SIMPLEX,2,(255,255,255),3,cv2.LINE_AA)
+
+                for i in range(len(mlst)):
+                    
+
+                    clst=out_list(mlst[i])
+                    cv2.putText(frame,"#"f"{i+1}", (100,150+40*i ), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+                    cv2.putText(frame,f"{clst[0]}", (200, 150+40*i ), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+                    cv2.putText(frame,f"{clst[1]}", (500,150+40*i ), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+
+                cv2.putText(frame,"FEMALE",(1270,100), cv2.FONT_HERSHEY_SIMPLEX,2,(255,255,255),3,cv2.LINE_AA)
+
+                i+=1
+
+                for j in range(len(flst)):
+
+                    clst=out_list(flst[j])
+                    cv2.putText(frame,"#"f"{j+1}", (1100,150+40*j ), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) 
+                    cv2.putText(frame,f"{clst[0]}", (1200,150+40*j ), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA) 
+                    cv2.putText(frame,f"{clst[1]}", (1400,150+40*j), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)             
+               
+               
                 cv2.imshow('Leaderboard',frame)
 
                 if cv2.waitKey(10) & 0xFF == ord('q'):
@@ -114,7 +136,7 @@ def start_pushup_detection():
     cv2.setWindowProperty('Mediapipe feed', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     #timer values
     start_time = time.time()
-    duration = 15
+    duration = 40
 
     #curl counter variables
     counter = 0
