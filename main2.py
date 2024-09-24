@@ -94,21 +94,28 @@ def wait_for_start():
                 if not ret:
                     break
 
-                cv2.putText(frame,"MALE",(40,20), cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,0),1,cv2.LINE_AA)
+                draw_rectangle(frame,0.01,0.01,0.45,0.5,(0,0,0),-1)
+                draw_rectangle(frame,0.50,0.01,0.95,0.5,(0,0,0),-1)
+
+                cv2.putText(frame,"MALE",(40,20), cv2.FONT_HERSHEY_SIMPLEX,0.7,(255,255,255),1,cv2.LINE_AA)
 
                 for i in range(len(mlst)):
 
                     clst=out_list(mlst[i])
-                    cv2.putText(frame,f"{clst[0]}       {clst[1]}", (20,40+15*i ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+                    cv2.putText(frame,"#"f"{i+1}", (20,40+15*i ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+                    cv2.putText(frame,f"{clst[0]}", (50,40+15*i ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+                    cv2.putText(frame,f"{clst[1]}", (230,40+15*i ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
 
-                cv2.putText(frame,"FEMALE",(40,70+15*i), cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,0),1,cv2.LINE_AA)
+                cv2.putText(frame,"FEMALE",(400,20), cv2.FONT_HERSHEY_SIMPLEX,0.7,(255,255,255),1,cv2.LINE_AA)
 
                 i+=1
 
                 for j in range(len(flst)):
 
                     clst=out_list(flst[j])
-                    cv2.putText(frame,f"{clst[0]}       {clst[1]}", (20,73+15*i+15*j ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)              
+                    cv2.putText(frame,"#"f"{j+1}", (350,40+15*j ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA) 
+                    cv2.putText(frame,f"{clst[0]}", (380,40+15*j ), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA) 
+                    cv2.putText(frame,f"{clst[1]}", (580,40+15*j), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)             
                
                
                 cv2.imshow('Leaderboard',frame)
@@ -128,7 +135,7 @@ def start_pushup_detection():
     cv2.setWindowProperty('Mediapipe feed', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     #timer values
     start_time = time.time()
-    duration = 15
+    duration = 40
 
     #curl counter variables
     counter = 0

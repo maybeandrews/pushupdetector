@@ -127,14 +127,14 @@ def read_from_file():
 
         #Classifying male and female and putting them into their separate lists
         if from_file=="Male" :
-            if len(mlst)<11:
+            if len(mlst)<16:
                 mlst.append(content)
         else :
-            if len(flst)<11:
+            if len(flst)<16:
                 flst.append(content) 
 
         #Breaking from looping through the read lines when top two of both male and female players are obtained
-        if len(mlst)==10 and len(flst)==10:
+        if len(mlst)==15 and len(flst)==15:
             break
 
     return mlst,flst
